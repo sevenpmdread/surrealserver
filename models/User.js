@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 const UserSchema = new mongoose.Schema({
-  name:{
+  username:{
   type:String,
   unique:[true,'The usernamename has to be unique'],
   required:[true,'Need a username to sign in'],
@@ -34,7 +34,7 @@ UserSchema.pre('save', async function(next){
 })
 
 UserSchema.methods.getName = function(){
-  return this.name
+  return this.username
 }
 
 UserSchema.methods.createJWT = function(){

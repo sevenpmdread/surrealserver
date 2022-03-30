@@ -14,8 +14,9 @@ const login = async (req,res) => {
   if(!email || !password)
   return res.status(StatusCodes.BAD_REQUEST)
   const user = await User.findOne({email})
+  console.log(user)
   if(!user)
-  return res.status(StatusCodes.BAD_REQUEST)
+  return res.status(StatusCodes.BAD_REQUEST).send({err:"User does not exists"})
   try
   {
     console.log(password)

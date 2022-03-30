@@ -7,6 +7,8 @@ const app = express();
 
 const authRouter = require('./routes/auth')
 const jobsRouter = require('./routes/jobs')
+const answerRouter = require('./routes/answers')
+const metaRouter = require('./routes/Meta')
 const connectDB = require('./db/connect')
 var jsonParser = bodyParser.json()
 const authmiddleware = require('./middleware/authentication')
@@ -14,8 +16,14 @@ const authmiddleware = require('./middleware/authentication')
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 app.use(bodyParser())
+// app.use("api/v1/questions/:id",function (req, res, next) {
+//   console.log('Request Type:', req.method);
+//   //next();
+// })
 app.use('/api/v1/auth',authRouter)
-app.use('/api/v1/jobs',authmiddleware,jobsRouter)
+app.use('/api/v1/questions',authmiddleware,jobsRouter)
+app.use("/api/v1/answers",authmiddleware,answerRouter)
+app.use("/api/v1/meta",authmiddleware,metaRouter)
 
 // error handler
 const notFoundMiddleware = require('./middleware/not-found');
