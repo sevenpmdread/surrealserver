@@ -56,7 +56,7 @@ catch(error){
 
 }
 const updateResponsecount = async (req,res) => {
-
+``
   try{
   console.log("Reacher at the begining of updateResponse")
   const {user:{userId}} = req

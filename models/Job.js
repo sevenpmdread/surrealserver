@@ -6,11 +6,15 @@ question_text:{
   required:[true,"Please provide a question name"],
   maxlength:100,
 },
+desc:{
+  type:String
+},
 category:{
   type:String,
   required:[true,'Please provide category'],
   maxlength:50
-}
+},
+lastAnswered:Date
 })
 
 

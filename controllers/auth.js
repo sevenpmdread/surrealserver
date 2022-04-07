@@ -10,7 +10,9 @@ const register = async (req,res) => {
 }
 
 const login = async (req,res) => {
-  const {email,password} = req.body
+  console.log("Reched login")
+  const {email:email,password:password} = req.body
+  console.log(req.body)
   if(!email || !password)
   return res.status(StatusCodes.BAD_REQUEST)
   const user = await User.findOne({email})

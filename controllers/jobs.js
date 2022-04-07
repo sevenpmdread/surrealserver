@@ -19,6 +19,45 @@ const getAllQuestions = async (req,res) => {
 
 }
 
+const exploredata = async(req,res) => {
+
+  try{
+    const posts = await Question.aggregate([
+      { $sort : { lastAnswered : -1 } },
+       { $limit: 20 },
+       { $lookup:
+      {
+        from: "metadatas",
+        localField: "_id",
+        foreignField: "post_id",
+        as:"metadata",
+      }
+      },
+        { $lookup:
+      {
+        from: "answers",
+        localField: "_id",
+        foreignField: "question_id",
+        as:"answers",
+        pipeline :[
+          { $limit: 20 }
+        ]
+      }
+      },
+  ])
+  if(!posts)
+  {
+    throw new BadRequestError("no posts found for explore")
+  }
+  else
+  res.status(StatusCodes.ACCEPTED).json({posts,nbHits:posts.length})
+  }
+  catch(error)
+  {
+    throw new BadRequestError(error)
+  }
+}
+
 const fetchhomedata = async(req,res) => {
   try {
 
@@ -35,7 +74,7 @@ const fetchhomedata = async(req,res) => {
       { $group :
     {
         _id : "$category",
-        questions: { $push: { id: "$_id", text: "$question_text", count:{$arrayElemAt : ["$questionsids", 0] }} }
+        questions: { $push: { id: "$_id", text: "$question_text", desc:"$desc", count:{$arrayElemAt : ["$questionsids", 0] }} }
     }
     },
      ]
@@ -135,5 +174,5 @@ const createQuestion = async (req,res) => {
 // }
 
 module.exports  = {
-  getAllQuestions,getQuestion,createQuestion,fetchhomedata
+  exploredata,getAllQuestions,getQuestion,createQuestion,fetchhomedata
 }
