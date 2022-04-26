@@ -14,8 +14,9 @@ category:{
   required:[true,'Please provide category'],
   maxlength:50
 },
-lastAnswered:Date
-})
-
+lastAnswered:Date,
+username:String,
+isAnonymous:Boolean
+},{ timestamps: true })
 
 module.exports = mongoose.model('Question',QuestionSchema)

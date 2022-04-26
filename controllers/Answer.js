@@ -8,6 +8,31 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 
+const createContrast= async (req,res) => {
+  try{
+  //  const {user:{userId}} = req
+    const {answerId,contrastId} = req.body
+    console.log(answerId,contrastId)
+    const oganswer = await Answer.find({_id:answerId})
+    if(oganswer[0].contrast == contrastId)
+    {
+       throw new BadRequestError("Contrast already exists")
+     //  return  res.status(StatusCodes.BAD_REQUEST)
+    }
+      const answerUpdate = await Answer.findOneAndUpdate({_id:answerId},
+        {$set : {"contrast":contrastId}},{returnDocument: "after"})
+
+    return  res.status(StatusCodes.OK).json({answerUpdate})
+  }
+  catch(error)
+  {
+    console.log(error)
+    throw new BadRequestError(error)
+
+
+  }
+}
+
 const getAllAnswers = async (req,res) => {
   try {
   const answers = await Answer.find({})
@@ -98,17 +123,17 @@ const getresponsesbyuser = async (req,res) => {
   try{
   const {user:{userId}} = req
   const {username} = req.body
-  const answers = await Question.aggregate([ 
+  const answers = await Question.aggregate([
     { $lookup:
        {
          from: "answers",
          localField: "_id",
          foreignField: "question_id",
-         as:"answersnew" 
-       } 
+         as:"answersnew"
+       }
        },
       {$match:{'answersnew.username':username}},
-  
+
        ])
   if(!answers)
   {
@@ -121,6 +146,24 @@ catch(error)
   throw new BadRequestError(error)
 }
 
+}
+
+const getAnswer = async (req,res) => {
+  try{
+    const {id} = req.body
+    const contrastAnswer  = await Answer.findOne({_id:id})
+    if(!contrastAnswer)
+    {
+      throw new BadRequestError(
+        "No answer found for contrast id"
+      )
+    }
+   return  res.status(StatusCodes.OK).json({contrastAnswer})
+  }
+  catch(error)
+  {
+    throw new BadRequestError(error)
+  }
 }
 
 const createAnswer = async (req,res,next) => {
@@ -146,12 +189,12 @@ const createVentAnswer = async (req,res,next) => {
 
   try {
   //console.log(req.body)
-  const question = await Question.create({question_text,lastAnswered:Date.now(),category:"vent"})
+  const question = await Question.create({question_text,lastAnswered:Date.now(),category:"vent",username,isAnonymous})
   console.log(question)
  // res.status(StatusCodes.BAD_REQUEST).json(question)
 
   const answer = await Answer.create({question_id:question._id,answer_text,username,isAnonymous})
-  req.body.postid = question.question_id
+  req.body.postid = question._id
   next()
 }
   catch(err)
@@ -164,5 +207,6 @@ const createVentAnswer = async (req,res,next) => {
 
 
 module.exports  = {
-  getAnswersforId,createVentAnswer,getAllAnswers,getAnswersforCategory,getAnswersforquestion,createAnswer,getresponsesbyuser
+createContrast,getAnswer,
+getAnswersforId,createVentAnswer,getAllAnswers,getAnswersforCategory,getAnswersforquestion,createAnswer,getresponsesbyuser,
 }

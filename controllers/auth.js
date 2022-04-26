@@ -27,7 +27,7 @@ const login = async (req,res) => {
     if(!verify)
     return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({err:"ksjdhfsjh"})
     const token = user.createJWT()
-    res.send({username:user.getName(),token:token})
+    return res.json({username:user.getName(),token:token})
   }
   catch(error)
   {

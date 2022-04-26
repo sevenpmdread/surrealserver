@@ -28,6 +28,34 @@ catch(error){
 }
 
 }
+
+const updateVotecount = async (req,res) => {
+
+  try{
+  const {user:{userId}} = req
+  const {postid} = req.body
+  const post = await Meta.findOne({post_id:postid})
+  if(!post)
+  {
+    postdetails = await Meta.create({post_id:postid ,upvotecount:1})
+  }
+  else
+  {postdetails =   await Meta.updateOne({
+  post_id:postid
+  }, {  $inc: { upvotecount: 1 }})}
+    if(!postdetails)
+  {
+    throw new NotFoundError('post id not found')
+  }
+  res.status(StatusCodes.OK).json({postdetails})
+}
+catch(error){
+  console.log(error)
+  throw new BadRequestError("Error in fetch post by id")
+
+}
+
+}
 const updateSharecount = async (req,res) => {
 
   try{
@@ -62,8 +90,9 @@ const updateResponsecount = async (req,res) => {
   const {user:{userId}} = req
   var {postid,question_id} = req.body
   postid = postid || question_id
-  console.log('Reached here')
   const post = await Meta.findOne({post_id:postid})
+  console.log('Reached here',post)
+
   if(!post)
   {
     postdetails = await Meta.create({post_id:postid,responsecount:1})
@@ -117,5 +146,5 @@ catch(error){
 }
 
 module.exports  = {
-  getCount,updatePincount,updateSharecount,updateResponsecount
+  getCount,updateVotecount,updatePincount,updateSharecount,updateResponsecount
 }

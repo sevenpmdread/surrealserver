@@ -2,8 +2,58 @@ require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
 var bodyParser = require('body-parser')
-
+const AWS = require('aws-sdk')
+const multer = require('multer')
+const {memoryStorage}  = require('multer')
+const storage = memoryStorage()
+const upload = multer({storage})
 const app = express();
+var cors = require('cors');
+app.use(cors());
+
+
+// const s3 = new AWS.S3({
+//   accessKeyId:'AKIASXPV2OKDJFGJSHVV',
+//   secretAccessKey:'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',
+// })
+
+// const uploadAudio = (filename,bucketname,file) => {
+
+//   return new Promise((resolve,reject)=>{
+//     const params = {
+//       Key:filename,
+//       Bucket:bucketname,
+//       Body:file,
+//       ContentType:'audio/mpeg',
+//       ACL:'public-read'
+//     }
+
+//      s3.upload(params,(err,data)=>{
+//       if(err)
+//       {
+//         reject (err)
+//       }
+//       else
+//       {
+//         resolve (data)
+//       }
+//     })
+//   })
+// }
+
+
+
+// app.post('/upload',upload.single('audiofile'),async (req,res)=> {
+//   const filename = 'my first upload'
+//   const bucketname = 'revisitapp'
+//   const file = req.file.buffer
+//   console.log(file)
+//   const link = await uploadAudio(filename,bucketname,file)
+//   console.log("link",link)
+//   console.log('uploaded successfully...')
+//   return res.json({link})
+// })
+
 
 const authRouter = require('./routes/auth')
 const jobsRouter = require('./routes/jobs')
