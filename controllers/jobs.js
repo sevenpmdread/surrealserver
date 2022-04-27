@@ -30,6 +30,21 @@ const createVentQuestion = async (req,res,next) => {
   }
 }
 
+const getQoD  = async(req,res) => {
+  try{
+    console.log("REACHED GET RANDOM")
+    const question = await Question.aggregate([{ $sample: { size: 1 } }])
+    const metadata = await Meta.find({post_id:question[0]._id})
+    return res.status(StatusCodes.ACCEPTED).json({question,metadata})
+
+  }
+  catch(error)
+  {
+    console.log(error)
+    throw new BadRequestError(error)
+  }
+}
+
 const getRandomQuestion  = async(req,res) => {
   try{
     console.log("REACHED GET RANDOM")
@@ -264,5 +279,5 @@ const createQuestion = async (req,res) => {
 // }
 
 module.exports  = {
-  ventexplore,createVentQuestion,getRandomQuestion,exploredata,getAllQuestions,getQuestion,createQuestion,fetchhomedata
+  getQoD,ventexplore,createVentQuestion,getRandomQuestion,exploredata,getAllQuestions,getQuestion,createQuestion,fetchhomedata
 }
