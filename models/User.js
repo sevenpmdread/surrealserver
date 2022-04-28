@@ -49,7 +49,7 @@ UserSchema.methods.compare = function(password){
       reject(err)
       if(isMatch)
       resolve(true)
-      reject(false)
+      reject({err:'Incorrect User details'})
     })
   })
 }

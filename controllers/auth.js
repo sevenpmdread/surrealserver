@@ -4,9 +4,23 @@ const {BadRequestError} = require('../errors')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const register = async (req,res) => {
+  try{
+    const {email,username} = req.body
+    const userfind = await User.findOne({email,username})
+    if(userfind)
+    throw new BadRequestError('User already exists')
+
   const user = await User.create({...req.body})
   const token = user.createJWT()
   res.status(StatusCodes.CREATED).json({user: user.getName(),token})
+  }
+  catch(error)
+  {
+    if(error.code = 11000 && error.keyPattern.username)
+    return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({err:'Username already exists'})
+else
+    return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({err:error.message})
+  }
 }
 
 const login = async (req,res) => {
@@ -23,16 +37,19 @@ const login = async (req,res) => {
   {
     console.log(password)
     const verify = await user.compare(password)
-    console.log(verify)
+    console.log("comparison failed",verify)
     if(!verify)
-    return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({err:"ksjdhfsjh"})
+    {
+      console.log("veirrrrr",verify)
+    return res.status(StatusCodes.BAD_REQUEST).send({err:"ksjdhfsjh"})
+  }
     const token = user.createJWT()
     return res.json({username:user.getName(),token:token})
   }
   catch(error)
   {
       console.log(error)
-      return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({error})
+      return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(error)
   }
   res.json({...req.body})
   console.log(req)
