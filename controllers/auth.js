@@ -14,11 +14,11 @@ const login = async (req,res) => {
   const {email:email,password:password} = req.body
   console.log(req.body)
   if(!email || !password)
-  return res.status(StatusCodes.BAD_REQUEST)
+  return res.status(StatusCodes.BAD_REQUEST).json({err:"User does not exists"})
   const user = await User.findOne({email})
   console.log(user)
   if(!user)
-  return res.status(StatusCodes.BAD_REQUEST).send({err:"User does not exists"})
+  return res.status(StatusCodes.BAD_REQUEST).json({err:"User does not exists"})
   try
   {
     console.log(password)
