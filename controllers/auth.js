@@ -16,10 +16,11 @@ const register = async (req,res) => {
   }
   catch(error)
   {
+    console.log(error)
     if(error.code = 11000 && error.keyPattern.username)
     return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({err:'Username already exists'})
-else
-    return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({err:error.message})
+else if(error.code = 11000 && error.keyPattern.email)
+    return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({err:'User already exists,please login with email'})
   }
 }
 

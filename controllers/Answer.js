@@ -123,18 +123,28 @@ const getresponsesbyuser = async (req,res) => {
   try{
   const {user:{userId}} = req
   const {username} = req.body
-  const answers = await Question.aggregate([
-    { $lookup:
-       {
-         from: "answers",
-         localField: "_id",
-         foreignField: "question_id",
-         as:"answersnew"
-       }
-       },
-      {$match:{'answersnew.username':username}},
+  const answers = await Answer.aggregate([
+    {$match:{'username':username}},
+     { $lookup:
+     {
+     from: "questions",
+     localField: "question_id",
+     foreignField: "_id",
+     as:"answersnew"
+   }
+   },
+   { $sort : { createdAt : -1 } },
 
-       ])
+    {
+    $unwind: '$answersnew' //  You have to use $unwind on an array if you want to use a field in the subdocument array to further usage with `$lookup`
+  },
+   {
+  $group :
+    {
+      _id : { question_text: "$answersnew.question_text",question_id:"$question_id"},
+      answer:{$push:{answer_text:"$answer_text",isAnonymous:'$isAnonymous',createdAt:'$createdAt',updatedAt:'$updatedAt',_id:'$_id'}}
+      }}
+])
   if(!answers)
   {
     throw new NotFoundError('Job id not found')
