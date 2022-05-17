@@ -58,13 +58,14 @@ const getAllAnswers = async (req,res) => {
 const getAnswersforId = async(req,res) => {
   const {user:{userId}} = req
   const {id,skip,limit} = req.body
-  console.log(id)
+  console.log("in get answers for id",id)
   const answers = await Answer.find({
     question_id:id
   }).limit(limit).skip(skip)
+  console.log("in get answers for id",answers)
   if(!answers)
   {
-    throw new NotFoundError('Job id not found')
+    throw new NotFoundError('question id not found')
   }
  return  res.status(StatusCodes.OK).json({answers,nHits:answers.length})
 }

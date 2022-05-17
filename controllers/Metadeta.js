@@ -6,6 +6,53 @@ var ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken')
 
 
+const getTrending = async(req,res) => {
+  try{
+
+
+ const repsonse = await Meta.aggregate([
+
+  { $lookup:
+ {
+   from: "answers",
+   localField: "post_id",
+   foreignField: "_id",
+   as:"answer",
+ }
+ },
+ {
+$match: {
+ answer: {
+   $size: 1
+ }
+}},
+{
+  $sort : { sharecount : -1,pincount:-1 }
+},
+{
+$unwind: '$answer' //  You have to use $unwind on an array if you want to use a field in the subdocument array to further usage with `$lookup`
+},
+{ $lookup:
+ {
+   from: "questions",
+   localField: "answer.question_id",
+   foreignField: "_id",
+   as:"question",
+ }
+ }
+ ,
+ {
+   $limit:5
+ }
+])
+return res.json({repsonse})
+  }
+  catch(error)
+  {
+    throw new BadRequestError(error)
+  }
+}
+
 const getCount = async (req,res) => {
 
   try{
@@ -146,5 +193,5 @@ catch(error){
 }
 
 module.exports  = {
-  getCount,updateVotecount,updatePincount,updateSharecount,updateResponsecount
+  getCount,updateVotecount,updatePincount,updateSharecount,updateResponsecount,getTrending
 }
