@@ -61,7 +61,7 @@ const getAnswersforId = async(req,res) => {
   console.log("in get answers for id",id)
   const answers = await Answer.find({
     question_id:id
-  }).limit(limit).skip(skip)
+  }).limit(limit).skip(skip).sort({createdAt:-1})
   console.log("in get answers for id",answers)
   if(!answers)
   {
@@ -135,7 +135,6 @@ const getresponsesbyuser = async (req,res) => {
    }
    },
    { $sort : { createdAt : -1 } },
-
     {
     $unwind: '$answersnew' //  You have to use $unwind on an array if you want to use a field in the subdocument array to further usage with `$lookup`
   },
