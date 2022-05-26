@@ -22,6 +22,9 @@ const UserSchema = new mongoose.Schema({
     type:String,
     required:[true,'Please provide a password'],
     minlength:8
+  },
+  devicetoken:{
+    type:String
   }
 })
 

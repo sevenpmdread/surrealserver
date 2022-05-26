@@ -9,8 +9,35 @@ const storage = memoryStorage()
 const upload = multer({storage})
 const app = express();
 var cors = require('cors');
+const { initializeApp } = require('firebase-admin/app');
+// var admin = require('firebase-admin')
+// var serviceAccount = require('./rn-firebase-key.json')
+// initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 app.use(cors());
 
+// var registrationToken = "fp9vUbMgTPqjDKVnUCAyFe:APA91bHw19PW19yJD2y3M0_LG7-z7TD8krZ8bRMG3-E_8fKErN94B7yZZxMJ1EbmqA2wSBCmhU6XGwlcaF6aHHiUUN92Xn7Y1gnH_KDOQ584HRHy4p5PZn5YPVF6rTFvXPDlCOZ_M6W1"
+// var payload = {
+//   data:{
+//     MykEY1:"Hello firebase app test"
+//   },
+//   notification:{
+//     "title":"Portugal vs. Denmark",
+//     "body":"great match!",
+//   },
+// }
+
+// var options = {
+//   priority:"high",
+//   timeToLive:60*60*24
+// }
+
+// admin.messaging().sendToDevice(registrationToken,payload,options).then(function(response){
+//   console.log("Succefully sent message",response)
+// }).catch(function(error){
+//   console.log("error sending message",error)
+// })
 
 const s3 = new AWS.S3({
   accessKeyId:'AKIASXPV2OKDJFGJSHVV',
@@ -40,7 +67,6 @@ const uploadAudio = (filename,bucketname,file) => {
     })
   })
 }
-
 
 
 app.post('/upload',upload.single('audiofile'),async (req,res)=> {

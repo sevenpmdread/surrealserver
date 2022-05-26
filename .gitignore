@@ -1,4 +1,4 @@
 /node_modules
 .env
-
+/rn-firebase-key.json
 .vercel

@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const register = async (req,res) => {
   try{
-    const {email,username} = req.body
+    const {email,username,devicetoken} = req.body
     const userfind = await User.findOne({email,username})
     if(userfind)
     throw new BadRequestError('User already exists')
