@@ -24,6 +24,20 @@ else if(error.code = 11000 && error.keyPattern.email)
   }
 }
 
+const updatetoken = async(req,res) => {
+  try{
+    const {username,devicetoken} = req.body
+    const userfind = await User.findOne({username})
+    const user = await User.update({...req.body})
+    res.status(StatusCodes.CREATED).json({username},{$set:{'devicetoken':devicetoken}})
+  }
+  catch(error)
+  {
+    console.log(error)
+    return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send({err:'Error in updating device token'})
+  }
+}
+
 const login = async (req,res) => {
   console.log("Reched login")
   const {email:email,password:password} = req.body
@@ -58,5 +72,5 @@ const login = async (req,res) => {
 }
 
 module.exports = {
-  login,register
+  login,register,updatetoken
 }

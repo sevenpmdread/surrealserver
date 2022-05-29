@@ -1,6 +1,10 @@
 const Meta = require('../models/PostMetadata')
+const Answer = require('../models/Answers')
+const Question = require('../models/Job')
+const User = require('../models/User')
 const {StatusCodes} = require('http-status-codes')
 const {BadRequestError,NotFoundError} = require('../errors')
+const NotificationService = require('./NotificationService')
 const bcrypt = require('bcryptjs')
 var ObjectId = require('mongoose').Types.ObjectId;
 const jwt = require('jsonwebtoken')
@@ -95,6 +99,17 @@ const updateVotecount = async (req,res) => {
   {
     throw new NotFoundError('post id not found')
   }
+
+const finduser = await Question.findOne({_id:postid})
+//console.log(finduser)
+if(finduser.username)
+{
+const user =await  User.find({username:finduser.username})
+//console.log(user[0].devicetoken,finduser.answer_text)
+//await NotificationService(user[0].devicetoken,"Your repsonse was shared!",finduser.answer_text,{type:'share',answer:finduser,user})
+
+await NotificationService(user[0].devicetoken,`Your question ${finduser.question_text} was upvoted!`,finduser.question_text,{type:'upvote',question:finduser})
+}
   res.status(StatusCodes.OK).json({postdetails})
 }
 catch(error){
@@ -107,7 +122,6 @@ catch(error){
 const updateSharecount = async (req,res) => {
 
   try{
-  const {user:{userId}} = req
   const {postid} = req.body
   const post = await Meta.findOne({post_id:postid})
   if(!post)
@@ -115,9 +129,17 @@ const updateSharecount = async (req,res) => {
     postdetails = await Meta.create({post_id:postid ,sharecount:1})
   }
   else
-  {postdetails =   await Meta.updateOne({
+  {
+  postdetails =   await Meta.updateOne({
   post_id:postid
-  }, {  $inc: { sharecount: 1 }})}
+  }, {  $inc: { sharecount: 1 }})
+
+}
+const finduser = await Answer.findOne({_id:postid})
+//console.log(finduser)
+const user =await  User.find({username:finduser.username})
+//console.log(user[0].devicetoken,finduser.answer_text)
+await NotificationService(user[0].devicetoken,"Your repsonse was shared!",finduser.answer_text,{type:'share',answer:finduser,user})
     if(!postdetails)
   {
     throw new NotFoundError('post id not found')
@@ -183,6 +205,12 @@ const updatePincount = async (req,res) => {
   {
     throw new NotFoundError('post id not found')
   }
+
+const finduser = await Answer.findOne({_id:postid})
+//console.log(finduser)
+const user =await  User.find({username:finduser.username})
+//console.log(user[0].devicetoken,finduser.answer_text)
+await NotificationService(user[0].devicetoken,"Your repsonse was pinned!",finduser.answer_text,{type:'pin',answer:finduser,user})
   res.status(StatusCodes.OK).json({postdetails})
 }
 catch(error){

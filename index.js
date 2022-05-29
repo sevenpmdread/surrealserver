@@ -10,11 +10,8 @@ const upload = multer({storage})
 const app = express();
 var cors = require('cors');
 const { initializeApp } = require('firebase-admin/app');
-// var admin = require('firebase-admin')
-// var serviceAccount = require('./rn-firebase-key.json')
-// initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
+ var admin = require('firebase-admin')
+ var serviceAccount = require('./rn-firebase-key.json')
 app.use(cors());
 
 // var registrationToken = "fp9vUbMgTPqjDKVnUCAyFe:APA91bHw19PW19yJD2y3M0_LG7-z7TD8krZ8bRMG3-E_8fKErN94B7yZZxMJ1EbmqA2wSBCmhU6XGwlcaF6aHHiUUN92Xn7Y1gnH_KDOQ584HRHy4p5PZn5YPVF6rTFvXPDlCOZ_M6W1"
@@ -129,6 +126,9 @@ const port = process.env.PORT || 3000;
 
 const start = async () => {
   try {
+    initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
     await connectDB(process.env.MONGO_URI)
     app.listen(port, () =>
     console.log(`Server is listening on port ${port}...`)

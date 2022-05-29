@@ -1,11 +1,13 @@
 const Answer = require('../models/Answers')
 const Question = require('../models/Job')
+const User = require('../models/User')
 const Meta = require('../models/PostMetadata')
 const {updateResponsecount} = require('../controllers/Metadeta')
 const {StatusCodes} = require('http-status-codes')
 const {BadRequestError,NotFoundError} = require('../errors')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const NotificationService = require('./NotificationService')
 
 
 const createContrast= async (req,res) => {
@@ -183,7 +185,14 @@ const createAnswer = async (req,res,next) => {
   try {
   console.log(req.body)
   const answer = await Answer.create({question_id,answer_text,username,isAnonymous})
-  const question = await Question.updateOne({_id:question_id},{ lastAnswered:Date.now()})
+  const question = await Question.findOneAndUpdate({_id:question_id},{ lastAnswered:Date.now()})
+  if(question.username)
+  {
+
+const user =await  User.find({username:question.username})
+//console.log(user[0].devicetoken,finduser.answer_text)
+await NotificationService(user[0].devicetoken,`${question.question_text} has a new response!`,`  ${isAnonymous ? `anonymous responded with` : username + ' responded with - '} ${answer_text}`,{type:'response',question,answer_text,responseby:isAnonymous ? 'anonymous' : username})
+  }
   next()
 }
   catch(err)
