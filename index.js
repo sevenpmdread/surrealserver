@@ -14,68 +14,8 @@ const { initializeApp } = require('firebase-admin/app');
  var serviceAccount = require('./rn-firebase-key.json')
 app.use(cors());
 
-// var registrationToken = "fp9vUbMgTPqjDKVnUCAyFe:APA91bHw19PW19yJD2y3M0_LG7-z7TD8krZ8bRMG3-E_8fKErN94B7yZZxMJ1EbmqA2wSBCmhU6XGwlcaF6aHHiUUN92Xn7Y1gnH_KDOQ584HRHy4p5PZn5YPVF6rTFvXPDlCOZ_M6W1"
-// var payload = {
-//   data:{
-//     MykEY1:"Hello firebase app test"
-//   },
-//   notification:{
-//     "title":"Portugal vs. Denmark",
-//     "body":"great match!",
-//   },
-// }
-
-// var options = {
-//   priority:"high",
-//   timeToLive:60*60*24
-// }
-
-// admin.messaging().sendToDevice(registrationToken,payload,options).then(function(response){
-//   console.log("Succefully sent message",response)
-// }).catch(function(error){
-//   console.log("error sending message",error)
-// })
-
-const s3 = new AWS.S3({
-  accessKeyId:'AKIASXPV2OKDJFGJSHVV',
-  secretAccessKey:'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',
-})
-
-const uploadAudio = (filename,bucketname,file) => {
-
-  return new Promise((resolve,reject)=>{
-    const params = {
-      Key:filename,
-      Bucket:bucketname,
-      Body:file,
-      ContentType:'audio/mpeg',
-      ACL:'public-read'
-    }
-
-     s3.upload(params,(err,data)=>{
-      if(err)
-      {
-        reject (err)
-      }
-      else
-      {
-        resolve (data)
-      }
-    })
-  })
-}
 
 
-app.post('/upload',upload.single('audiofile'),async (req,res)=> {
-  const filename = 'my first upload'
-  const bucketname = 'revisitapp'
-  const file = req.file.buffer
-  console.log(file)
-  const link = await uploadAudio(filename,bucketname,file)
-  console.log("link",link)
-  console.log('uploaded successfully...')
-  return res.json({link})
-})
 
 
 const authRouter = require('./routes/auth')
