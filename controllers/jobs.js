@@ -123,8 +123,8 @@ const exploredata = async(req,res) => {
     console.log(req.params,skip)
     const posts = await Question.aggregate([
       { $sort : { lastAnswered : -1 } },
-      { $skip: skip*5 },
-       { $limit:5 },
+      { $skip: skip*15 },
+       { $limit:15 },
        { $lookup:
       {
         from: "metadatas",
@@ -133,18 +133,18 @@ const exploredata = async(req,res) => {
         as:"metadata",
       }
       },
-        { $lookup:
-      {
-        from: "answers",
-        localField: "_id",
-        foreignField: "question_id",
-        as:"answers",
-        pipeline :[
-          { $limit:10 },
-          { $sort : { createdAt : -1 } }
-        ]
-      }
-      },
+      //   { $lookup:
+      // {
+      //   from: "answers",
+      //   localField: "_id",
+      //   foreignField: "question_id",
+      //   as:"answers",
+      //   pipeline :[
+      //     { $limit:10 },
+      //     { $sort : { createdAt : -1 } }
+      //   ]
+      // }
+      // },
   ])
   if(!posts)
   {

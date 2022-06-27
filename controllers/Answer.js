@@ -8,6 +8,8 @@ const {BadRequestError,NotFoundError} = require('../errors')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const NotificationService = require('./NotificationService')
+const mongoose  = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId;
 
 
 const createContrast= async (req,res) => {
@@ -59,11 +61,11 @@ const getAllAnswers = async (req,res) => {
 
 const getAnswersforId = async(req,res) => {
   const {user:{userId}} = req
-  const {id,skip,limit} = req.body
+  const {id,skip} = req.body
   console.log("in get answers for id",id)
   const answers = await Answer.find({
     question_id:id
-  }).limit(limit).skip(skip).sort({createdAt:-1})
+  }).limit(10).skip(skip*10).sort({createdAt:-1})
   console.log("in get answers for id",answers)
   if(!answers)
   {
@@ -122,6 +124,47 @@ const getAnswersforCategory = async (req,res) => {
 
 }
 
+
+const getanswerforquestionforuser = async (req,res) => {
+  try{
+  const {user:{userId}} = req
+  const {username,id} = req.body
+  console.log(username,id)
+  const answers = await Answer.aggregate([
+     { $match : { question_id : ObjectId(id),username:username } },
+     //{ $match : { question_id : id } }    //    { $lookup:
+  //    {
+  //    from: "questions",
+  //    localField: "question_id",
+  //    foreignField: "_id",
+  //    as:"answersnew"
+  //  }
+  //  },
+    { $sort : { createdAt : -1 } },
+  //   {
+  //   $unwind: '$answersnew' //  You have to use $unwind on an array if you want to use a field in the subdocument array to further usage with `$lookup`
+  // },
+  //  {
+  // $group :
+  //   {
+  //     _id : { question_text: "$answersnew.question_text",question_id:"$question_id"},
+  //     answer:{$push:{answer_text:"$answer_text",isAnonymous:'$isAnonymous',createdAt:'$createdAt',updatedAt:'$updatedAt',_id:'$_id'}}
+  //     }}
+])
+  if(!answers)
+  {
+    throw new NotFoundError('Job id not found')
+  }
+  return res.status(StatusCodes.OK).json({answers,nHits:answers.length})
+}
+catch(error)
+{
+  throw new BadRequestError(error)
+}
+
+}
+
+
 const getresponsesbyuser = async (req,res) => {
   try{
   const {user:{userId}} = req
@@ -136,7 +179,7 @@ const getresponsesbyuser = async (req,res) => {
      as:"answersnew"
    }
    },
-   { $sort : { createdAt : -1 } },
+   { $sort : { createdAt : 1 } },
     {
     $unwind: '$answersnew' //  You have to use $unwind on an array if you want to use a field in the subdocument array to further usage with `$lookup`
   },
@@ -226,6 +269,6 @@ const createVentAnswer = async (req,res,next) => {
 
 
 module.exports  = {
-createContrast,getAnswer,
+createContrast,getAnswer,getanswerforquestionforuser,
 getAnswersforId,createVentAnswer,getAllAnswers,getAnswersforCategory,getAnswersforquestion,createAnswer,getresponsesbyuser,
 }

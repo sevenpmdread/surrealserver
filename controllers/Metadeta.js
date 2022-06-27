@@ -138,7 +138,7 @@ const updateSharecount = async (req,res) => {
 const finduser = await Answer.findOne({_id:postid})
 //console.log(finduser)
 const user =await  User.find({username:finduser.username})
-//console.log(user[0].devicetoken,finduser.answer_text)
+console.log(user[0].devicetoken,finduser.answer_text)
 await NotificationService(user[0].devicetoken,"Your repsonse was shared!",finduser.answer_text,{type:'share',answer:finduser,user})
     if(!postdetails)
   {
